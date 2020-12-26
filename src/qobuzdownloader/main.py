@@ -19,8 +19,9 @@ import sys
 import gi
 
 gi.require_version('Gtk', '3.0')
+gi.require_version('Handy', '1')
 
-from gi.repository import Gtk, Gio
+from gi.repository import Gtk, Handy, Gio
 
 from .window import QobuzdownloaderWindow
 
@@ -31,6 +32,7 @@ class Application(Gtk.Application):
                          flags=Gio.ApplicationFlags.FLAGS_NONE)
 
     def do_activate(self):
+        Handy.init()
         win = self.props.active_window
         if not win:
             win = QobuzdownloaderWindow(application=self)
