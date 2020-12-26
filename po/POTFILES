@@ -1,0 +1,7 @@
+data/com.github.Aurnytoraink.QobuzDownloader.desktop.in
+data/com.github.Aurnytoraink.QobuzDownloader.appdata.xml.in
+data/com.github.Aurnytoraink.QobuzDownloader.gschema.xml
+src/window.ui
+src/main.py
+src/window.py
+
