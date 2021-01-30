@@ -20,6 +20,7 @@ from gi.repository import Gtk, Handy, Gdk
 from qobuzdownloader.api.session import Session
 from qobuzdownloader.help_task import TaskHelper
 from qobuzdownloader.art_track import TrackListBox, TrackRow
+from qobuzdownloader.art_artist import ArtistFlowBox, ArtistBox
 from qobuzdownloader.help_artwork import get_cover_from_album
 
 
@@ -60,6 +61,9 @@ class QobuzdownloaderWindow(Handy.ApplicationWindow):
 
         self.track_listbox = TrackListBox(self)
         self.track_viewport.add(self.track_listbox)
+
+        self.artist_flowbox = ArtistFlowBox(self)
+        self.artist_viewport.add(self.artist_flowbox)
 
 
 
@@ -126,7 +130,10 @@ class QobuzdownloaderWindow(Handy.ApplicationWindow):
             row = TrackRow(track)
             self.track_listbox.add(row)
             TaskHelper().run(get_cover_from_album,row.track,self.session,callback=(row.display_cover,))
+        for track in results[2]:
+            box = ArtistBox(track)
+            self.artist_flowbox.add(box)
 
     def clear_all(self,*args):
         for child in self.track_listbox.get_children(): child.destroy()
-        # for child in self.artists_listbox.get_children(): child.destroy()
+        for child in self.artist_flowbox.get_children(): child.destroy()
