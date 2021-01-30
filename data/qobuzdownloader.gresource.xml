@@ -2,5 +2,6 @@
 <gresources>
   <gresource prefix="/com/github/Aurnytoraink/QobuzDownloader">
     <file>ui/window.ui</file>
+    <file>css/style.css</file>
   </gresource>
 </gresources>

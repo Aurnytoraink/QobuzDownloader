@@ -31,13 +31,31 @@ class Application(Gtk.Application):
         super().__init__(application_id='com.github.Aurnytoraink.QobuzDownloader',
                          flags=Gio.ApplicationFlags.FLAGS_NONE)
 
-    def do_activate(self):
+    def do_startup(self):
+        Gtk.Application.do_startup(self)
         Handy.init()
+
+        action = Gio.SimpleAction.new("quit", None)
+        action.connect("activate", self.do_quit)
+        self.add_action(action)
+
+        self.set_accels_for_action("app.quit", ["<Ctl>q"])
+
+    def do_activate(self):
         win = self.props.active_window
         if not win:
             win = QobuzdownloaderWindow(application=self)
         win.present()
 
+        #Setup CSS
+        css_provider = Gtk.CssProvider()
+        css_provider.load_from_resource('/com/github/Aurnytoraink/QobuzDownloader/css/style.css')
+        Gtk.StyleContext.add_provider_for_screen(
+            win.get_screen(), css_provider,
+            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+
+    def do_quit(self,*_):
+        self.quit()
 
 def main(version):
     app = Application()
