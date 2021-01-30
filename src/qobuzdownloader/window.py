@@ -20,6 +20,7 @@ from gi.repository import Gtk, Handy, Gdk
 from qobuzdownloader.api.session import Session
 from qobuzdownloader.help_task import TaskHelper
 from qobuzdownloader.art_track import TrackListBox, TrackRow
+from qobuzdownloader.help_artwork import get_cover_from_album
 
 
 @Gtk.Template(resource_path='/com/github/Aurnytoraink/QobuzDownloader/ui/window.ui')
@@ -111,16 +112,20 @@ class QobuzdownloaderWindow(Handy.ApplicationWindow):
 ### Interface
 
     def get_search(self,search):
-        self.app_stack.set_visible_child_name("wait")
-        self.clear_all()
-        TaskHelper().run(self.session.search,search.get_text(),callback=(self.display_search,))
+        query = search.get_text()
+        if query != "":
+            self.app_stack.set_visible_child_name("wait")
+            self.clear_all()
+            TaskHelper().run(self.session.search,query,callback=(self.display_search,))
+        else:
+            self.app_stack.set_visible_child_name("home")
 
     def display_search(self,results):
         self.app_stack.set_visible_child_name("app")
         for track in results[1]:
             row = TrackRow(track)
             self.track_listbox.add(row)
-            TaskHelper().run(self.session.search,search.get_text(),callback=(self.display_search,))
+            TaskHelper().run(get_cover_from_album,row.track,self.session,callback=(row.display_cover,))
 
     def clear_all(self,*args):
         for child in self.track_listbox.get_children(): child.destroy()

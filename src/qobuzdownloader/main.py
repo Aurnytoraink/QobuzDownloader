@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys
+import os
 import gi
 
 gi.require_version('Gtk', '3.0')
@@ -32,6 +33,10 @@ class Application(Gtk.Application):
                          flags=Gio.ApplicationFlags.FLAGS_NONE)
 
     def do_startup(self):
+        if os.path.isdir('/var/cache/files') is False:
+            os.mkdir('/var/cache/files')
+            os.mkdir('/var/cache/files/covers')
+        
         Gtk.Application.do_startup(self)
         Handy.init()
 
