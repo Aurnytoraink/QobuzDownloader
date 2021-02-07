@@ -125,14 +125,17 @@ class QobuzdownloaderWindow(Handy.ApplicationWindow):
             self.app_stack.set_visible_child_name("home")
 
     def display_search(self,results):
-        self.app_stack.set_visible_child_name("app")
-        for track in results[1]:
-            row = TrackRow(track)
-            self.track_listbox.add(row)
-            TaskHelper().run(get_cover_from_album,row.track,self.session,callback=(row.display_cover,))
-        for track in results[2]:
-            box = ArtistBox(track)
-            self.artist_flowbox.add(box)
+        if results[0] != [] and results[1] != [] and results[2] != []:
+            self.app_stack.set_visible_child_name("app")
+            for track in results[1]:
+                row = TrackRow(track)
+                self.track_listbox.add(row)
+                TaskHelper().run(get_cover_from_album,row.track,self.session,callback=(row.display_cover,))
+            for track in results[2]:
+                box = ArtistBox(track)
+                self.artist_flowbox.add(box)
+        else:
+            self.app_stack.set_visible_child_name("no_result")
 
     def clear_all(self,*args):
         for child in self.track_listbox.get_children(): child.destroy()

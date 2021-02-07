@@ -21,7 +21,6 @@ from qobuzdownloader.help_task import TaskHelper
 class ArtistBox(Gtk.FlowBoxChild):
     def __init__(self,artist):
         Gtk.FlowBoxChild.__init__(self)
-        print(self.get_parent())
         self.artist = artist
 
         artist_name = Gtk.Label.new()
