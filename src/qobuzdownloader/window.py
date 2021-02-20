@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from gi.repository import Gtk, Handy, Gdk
+from gi.repository import Gtk, Handy, Gdk, GLib
 
 from qobuzdownloader.api.session import Session
 from qobuzdownloader.help_task import TaskHelper
@@ -47,6 +47,8 @@ class QobuzdownloaderWindow(Handy.ApplicationWindow):
     artist_viewport = Gtk.Template.Child()
     album_viewport = Gtk.Template.Child()
 
+    timeout_id = None
+
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -54,7 +56,7 @@ class QobuzdownloaderWindow(Handy.ApplicationWindow):
         self.log_user.connect("changed",self.update_login_page)
         self.log_pwd.connect("changed",self.update_login_page)
         self.forget_pwd_btn.connect("clicked",self.forget_pwd)
-        self.search_entry.connect("search-changed",self.get_search)
+        self.search_entry.connect("search-changed",self.on_search_changed)
 
         #Init session
         self.session = Session()
@@ -114,15 +116,24 @@ class QobuzdownloaderWindow(Handy.ApplicationWindow):
 
 
 ### Interface
+    current_search = ""
+
+    def on_search_changed(self, search):
+        if search.get_text() != "":
+            self.app_stack.set_visible_child_name("wait")
+            if self.timeout_id is not None:
+                GLib.source_remove(self.timeout_id)
+            self.timeout_id = GLib.timeout_add(500, self.get_search,search)
+        else: self.app_stack.set_visible_child_name("home")
+
 
     def get_search(self,search):
-        query = search.get_text()
-        if query != "":
-            self.app_stack.set_visible_child_name("wait")
+        self.timeout_id = None
+        new_query = search.get_text()
+        if self.current_search != new_query:
+            self.current_search = new_query
             self.clear_all()
-            TaskHelper().run(self.session.search,query,callback=(self.display_search,))
-        else:
-            self.app_stack.set_visible_child_name("home")
+            TaskHelper().run(self.session.search,self.current_search,callback=(self.display_search,))
 
     def display_search(self,results):
         if results[0] != [] and results[1] != [] and results[2] != []:
